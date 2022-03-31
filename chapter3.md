@@ -96,4 +96,50 @@ MemberRegisterService svc = MemberRegisrerService(memberDao);
 # 8. 두 개 이상의 설정 파일 사용하기
 
 - 설정 클래스 파일을 여러개로 나눌 때 양 쪽 파일 모두에 같은 빈객체가 필요할 경우 생길 수 있다
-- 
+- 다른 파일에 선언 된 빈을 찾기 위해 **@Autowired** 애노테이션 사용, 다른 파일에서 설정한 빈이 할당됨 
+```java
+//Appconf1.java
+
+@Configuration
+public class Appconf1 {
+    @Bean
+    public MemberDao memberDao() {
+        return new MemberDao();
+    }
+}
+//Appconf2.java
+
+@Configuration
+public class Appconf2 {
+
+    @Autowired
+    private MemberDao memberDao;
+
+    @Bean
+    public MemberRegisterService memSvc() {
+        return new MemberRegisterService(memberDao);
+    }
+//설정클래스 사용방법
+ctx = new AnnotationConfigApplicationContext(Appconf1.class, Appconf2.class) // 파라미터는 가변인자
+```
+- @Import(설정 클래스)를 설정클래스에 붙이고 설정클래스 사용 시, Import 의 매개변수 클래스도 같이 사용된다.
+```java
+@Configuration
+@Import(Appconf2)
+public class Appconf1 {
+    ...
+}
+ctx = new AnnotationConfigApplicationContext(Appconf1.class);
+```
+
+# 9. getBean() 메서드 사용
+
+- BeanFactory 인터페이스에 정의되어 있다
+- getBean(빈객체 이름, 빈객체 타입)
+- 한 타입에 한 객체만 있다면 이름 생략가능, but 두 개 이상인데 생략시 익셉션 발생
+
+# 10. 주입 대상 객체를 모두 빈 객체로 설정해야 하나?
+
+- 스프링 컨테이너는 자동 주입, 라이프사이클 관리 등 다양한 기능 제공한다
+- 빈 객체로 설정하지 않은 것은 해주지않는다
+- 하는게 좋겠다
