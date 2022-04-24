@@ -92,6 +92,56 @@ public void update(Member member) {
 ```
 
 ## 4.5 PreparedStatementCreator를 이용한 쿼리 실행
+set() 메서드를 사용해 직접 인덱스파라미터 값 설정 가능(sql인젝션 방지 등을 위해)
+사용방법 : set타입 ex. setString(파라미터 인덱스, 값)
+
+```java
+PreparedStatement pstmt = con.prepareStatement(
+	"insert into MEMBER (EMAIL, PASSWORD, NAME, REGDATE) " + "values (?, ?, ?, ?)");
+	pstmt.setString(1, member.getEmail());
+	pstmt.setString(2, member.getPassword());
+	pstmt.setString(3, member.getName());
+	pstmt.setTimestamp(4, Timestamp.valueOf(member.getRegisterDateTime()));
+	return pstmt;
+	)
+```
+
+## 4.6 INSERT 쿼리 실행 시 KeyHolder를 이용해서 자동 생성 키값 구하기
+- 키값 생성 방식은 DB에게 위임한다면 따로 query(), update() 메소드에 키 값을 지정하지 않는다 
+- 자동 생성된 키 값이 궁금하다면? : KeyHolder 이용
+
+# 5. MemberDao 테스트하기
+
+![1](https://user-images.githubusercontent.com/69251780/164974100-56ee8df8-3bb8-4cee-9f87-44eb8f4c80b7.PNG)
+
+# 6. 스프링의 익셉션 변환 처리
+
+JDBC API 사용중 SQL익셉션이 발생하면 익셉션을 변환해서 발생시킨다
+- 이유 : 스프링은 다양한 DB 연동 기술을 제공한다
+- 그래서 각각 다른 익셉션이 생기면 개발자는 힘들다
+- JPA, 하이버네이트, 마이바티스 등 다양한 DB연동을 사용해도 스프링에서 변환시켜준다
+- **DataAccessException** 으로 변환시켜줌
+
+# 7. 트랜잭션 처리
+
+- 여러 쿼리를 한 작업에서 실행할 경우 각 쿼리는 앞의 쿼리에 의존성이 생기는 경우가 있다
+- 이 때 하나라도 실패하면 뒤의 쿼리값도 문제가 생김
+- 이를 위해 한 작업은 여러 쿼리 모두 성공하거나 아니면 모두 실패하거나로 관리함
+- 하나라도 실패시 모든 트랜잭션을 실행 이전으로 돌리는 것 : **Rollback**
+- 모든 쿼리가 성공하면 DB에 실제 결과를 반영하는 것 : **Commit**
+- JDBC는 setAutoCommit(false)를 이용해 트랜잭션을 시작한다
+- commit(), rollback(을 이용해 트랜잭션을 종료한다
+
+## 7.1 @Transactional을 이요한 트랜잭션 처리
+- JDBC에서 트랜잭션 처리는 너무 많은 메소드가 들어가서 문제가 생기기 쉬움
+- 애노테이션을 사용하면 쉽게 트랜잭션 관리 가능
+- **@Transactional** 사용하기 위해 스프링 설정이 필요
+	- 플랫폼 트랜잭션 매니저 빈 설정
+	- @Transactional 애노테이션 활성화 설정
+	- 하지만 알아서해줌
+
+
+
 
 
 
