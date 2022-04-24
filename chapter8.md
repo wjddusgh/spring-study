@@ -140,8 +140,52 @@ JDBC API 사용중 SQL익셉션이 발생하면 익셉션을 변환해서 발생
 	- @Transactional 애노테이션 활성화 설정
 	- 하지만 알아서해줌
 
+## 7.2 @Transactional과 프록시
+- 트랜잭션 처리는 공통 기능중 하나이므로 AOP를 사용함
 
+## 7.3 롤백 처리
+- 런타임 익셉션 발생시 롤백 진행
+- DataAccessException은 런타임 익셉션을 상속받았기에 이것도 롤백 진행
+- SQLException은 롤백이 되지않는다
+	- 롤백을 원할경우 @Transactional의 rollbackFor 속성 이용
+```java
+@Transactional(rollbackFor = SQLException.class)	//여러개 하고싶다면 중괄호 이용 -> { SQLException.class, IOException.class }
+public void someMethod() {
+	...
+}
+```
+- 런타임에도 롤백을 원하지 않을경우 noRollbackFor 속성 사용
 
+## 7.4 @Transactional의 주요 속성
+- 잘 쓰이진 않는데 간혹 필요할 때가 있다고 한다
 
+|속성|타입|설명|
+|------|---|---|
+|value|String|트랜잭션 관리시 사용할 플랫폼 트랜잭션 매니저 빈의 이름 지정 (default: " ") " "의 경우 빈 객체에서 타입이 플랫폼트랜잭션매니저인것 사용|
+|propagation|Propagation|트랜잭션 전파 타입 지정 (default: Propagation.REQUIRED)|
+|isolation|Isolation|트랜잭션 격리 레벨 지정 (default: Isolation.DEFAULT)|
+|timeout|int|트랜잭션 제한 시간 지정, 초 단위 (default:-1) -1의경우 DB의 타임아웃 시간 사용|
 
+- Propagation 타입 주요 값
 
+|값|설명|
+|------|---|
+|REQUIRED|메서드 수행에 트랜잭션 필요, 진행중인 트랜잭션이 존재시 해당 트랜잭션 사용하고 없을시 새로 생성|
+|MANDATORY|메서드 수행에 트랜잭션 필요, 진행중인 트랜잭션이 없으면 익셉션 발생|
+|REQUIRES_NEW|항상 새로운 트랜잭션 시작, 기존 트랜잭션은 일시중지했다가 새 트랜잭션 종료시 실행|
+|SUPPORTS|트랜잭션이 필요없지만, 진행중인 트랜잭션 존재시 사용|
+|NOT_SUPPORTED|트랜잭션이 필요없어서, 진행중인 트랜잭션 존재시 일시정지, 메소드 종료시 다시 진행|
+|NEVER|트랜잭션이 필요없어서, 진행중인 트랜잭션 존재시 익셉션 발생|
+|NESTED|트랜잭션 존재시 기존에 중첩된 트랜잭션에서 메서드 실행, 존재하지않으면 REQUIRED와 동일(JDBC 3.0이나 JTA Provider에서나 사용가능한 값)|
+
+- Isolation 타입 값 (이건 근데 DB마다 다름)
+
+|값|설명|
+|------|---|
+|DEFAULT|기본 설정 사용|
+|READ_UNCOMMITTED|다른 트랜잭션이 커밋하지 않은 데이터를 읽을 수 있다|
+|READ_COMMITTED|다른 트랜잭션이 커밋한 데이터를 읽을 수 있다|
+|REPEATABLE_READ|반복해서 읽어도 데이터가 동일한 값을 읽을 수 있다|
+|SERIALIZABLE|동일한 데이터로 두 개 이상의 트랜잭션 수행 불가|
+
+## 7.6 트랜잭션 전파
