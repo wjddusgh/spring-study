@@ -1,4 +1,4 @@
-- 스프링 MVC 웹 개발은 결국 **컨트롤러, 뷰 코드 구현** 을 의미
+스프링 MVC 웹 개발은 결국 **컨트롤러, 뷰 코드 구현** 을 의미
 
 # 2. 요청 매핑 애노테이션을 이용한 경로 매핑
 
@@ -113,3 +113,43 @@ Controller
 - 파라미터 타입에 맞게 변환할 때 변환할 수 없는 값이 들어오면 400 에러 발생
 
 # 12. 커맨드 객체 : 중첩 . 콜렉션 프로퍼티
+
+- 중첩 프로퍼티 : 클래스의 프로퍼티로 클래스를 갖는것
+- 스프링 MVC 커맨드 객체가 리스트, 중첩 프로퍼티 처리해 주는 기능
+	1. HTTP 요청 파라미터 이름이 "프로퍼티이름[인덱스]" 형식이면 List 타입 프로퍼티 값 목록으로 처리
+	2. HTTP 요청 파라미터 이름이 "프로퍼티이름.프로퍼티이름" 형식이면 중첩 프로퍼티 값을 처리
+
+# 13. Model을 통해 컨트롤러에서 뷰에 데이터 전달하기
+
+- 뷰에 데이터를 전달하기 위해 컨트롤러가 하는 두가지
+	1. 요청 매핑 애노테이션이 적용된 메서드의 파라미터로 Model 추가
+	2. Model 파라미터의 addAttribute() 메서드로 뷰에서 사용할 데이터 전달
+
+- 클래스의 프로퍼티중 필요없는, 비어있는 프로퍼티를 만들기 위해서는 Collections의 emptyList()등 empty~메서드 활용
+	- emptyList() 는 리스트지만 비어있도록 하기 위해 add(), get() 메서드 사용시 익셉션 발생
+
+## 13.1 ModelAndView를 통한 뷰 선택과 모델 전달
+
+- 지금까지 구현한 컨트롤러의 두가지 특징
+	1. Model을 통해 뷰에 데이터 전달
+	2. 리턴값은 결과를 보여줄 뷰 이름
+- @"방식"Mapping 애노테이션 사용시 ModelAndView 타입으로 컨트롤러 리턴이 가능해짐
+```java
+@GetMapping
+public ModelAndView form() {
+	List<Member> members = retrieveMany();
+	ModelAndView mav = new ModelAndView();
+	mav.addObject("members", members);		//addAttribute() 느낌 메서드
+	mav.setViewName("member/list")			//뷰 이름 넣는 메서드
+	return mav;
+}
+```
+
+## 13.2 GET 방식과 POST 방식에 동일 이름 커맨드 객체 사용하기
+- 사용할 커맨드 객체 이름이 매핑 이름과 다르다면 @ModelAttribute 사용해서 이름 바꾸자
+
+# 14. 주요 폼 태그 설명
+
+- 아무래도 더좋은 것들이 많아 스프링 MVC 주요 태그는 생략
+
+
