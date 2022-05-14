@@ -113,4 +113,8 @@ public class RegController {
 
 # 5. Bean Validation 을 이용한 값 검증 처리
 
-
+- Bean Validation 스펙에는 @Valid, @NotNull, @Digits, @Size, @NotBlank, @NotEmpty 등이 정의되어 있다
+- 이것들로 Validator 작성 없이 검증을 처리할 수 있다
+  - Bean Validation과 관련된 의존을 설정에 추가한다
+  - 커맨드 객체에 @NotNull, @Digits 등의 애노테이션을 이용해서 검증 규칙을 설정한다   
+  - OptionalValidatorFactoryBean 클래스를 빈으로 등록
