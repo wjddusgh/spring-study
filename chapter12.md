@@ -117,4 +117,30 @@ public class RegController {
 - 이것들로 Validator 작성 없이 검증을 처리할 수 있다
   - Bean Validation과 관련된 의존을 설정에 추가한다
   - 커맨드 객체에 @NotNull, @Digits 등의 애노테이션을 이용해서 검증 규칙을 설정한다   
-  - OptionalValidatorFactoryBean 클래스를 빈으로 등록
+  - OptionalValidatorFactoryBean 클래스를 빈으로 등록 (@EnableWebMvc 를 사용하면 알아서 등록해줌)
+    - 단, 커스텀 글로벌 Validator가 더 우선순위 높으므로 이것을 사용하려면 커스텀 Validator 없애자
+  
+## 5.1 Bean Validation의 주요 애노테이션
+### Bean Validation 1.1
+|애노테이션|주요 속성|설명|지원 타입|
+|---|---|---|---|
+|@AssertTrue, @AssertFalse||값이 true인지, false 인지 검사, null은 유효|Boolean|
+|@DecimalMax, @DecimalMin|String: 최대값,최솟값 boolean: 지정값 포함여부, default: true|지정한 값보다 작은지,큰지 검사 inclusive가 false면 value값은 포함안함|BigDecimal, BigInteger, CahrSequence, 정수 타입|
+|@Max, @Min|long value|지정값과 비교 검사|BigDecimal, BigInteger, 정수 타입|
+|@Digits|integer: 최대 정수 자릿수, fraction: 최대 소숫점 자릿수|자릿수가 지정한 크기 넘는지 검사|BigDecimal, BigInteger, CharSequence, 정수 타입|
+|@Size|min, max|길이나 크기가 지정 범위인지 검사|CharSequence, Collection, Map, 배열|
+|@Null, @NotNull||값이 null인지 아닌지 검사||
+|@Pattern|String regexp: 정규표현식|값이 정규식에 일치하는지 검사|CharSequence|
+- @NotNull을 제외하면 모두 값이 null일때 유효하므로 주의하라
+
+### Bean Validation 2.0
+- hibernate-validator 모듈을 의존성 추가하면 사용가능
+|애노테이션|설명|지원 타입|
+|---|---|---|
+|@NotEmpty|null이 아니고 길이,크기가 0이 아닞지 검사|CharSequence, Collection, Map, 배열|
+|@NotBlank|null이아니고 한개 이상의 문자를 포함하는지 검사|CharSequence|
+|@Positive, @PositiveOrZero|양수인지 검사, 0포함도 가능|BigDecimal, BigInteger, 정수 타입|
+|@Negative, @NegativeOrZero|음수인지 검사, 0포함도 가능|BigDecimal, BigInteger, 정수 타입|
+|@Email|이메일주소가 유효한지 검사|CharSequence|
+|@Future, @FutureOrPresent|해당 시간이 미래시간인지 검사, 현재 포함도 가능|시간 관련 타입|
+|@Past, @PastOrPresent|해당 시간이 과거시간인지 검사, 현재 포함도 가능|시간 관련 타입|
